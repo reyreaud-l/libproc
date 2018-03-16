@@ -22,3 +22,8 @@ std::string calculate_size(uint64_t size)
   ::strcpy(result, "0 B");
   return std::string(result);
 }
+
+int page_size()
+{
+  return getpagesize();
+}

@@ -129,9 +129,15 @@ std::string Process::dump() const
   res += std::string(stat_.comm) + '\n';
   res += "  pid: " + std::to_string(stat_.pid) + '\n';
   res += "  state: " + std::string(1, stat_.state) + '\n';
-  res += "  size: " + calculate_size(statm_.size) + "\n";
+  res += "  size: " + calculate_size(statm_.size * page_size()) + '\n';
+  res += "  resident: " + calculate_size(statm_.resident * page_size()) + '\n';
+  res += "  shared: " + calculate_size(statm_.shared * page_size()) + '\n';
+  res += "  text: " + calculate_size(statm_.text * page_size()) + '\n';
+  res += "  data: " + calculate_size(statm_.data * page_size()) + '\n';
+  res += "  totalmem: " + calculate_size(total_mem_size() * page_size()) + '\n';
+  res += "  threads: " + std::to_string(stat_.num_threads) + '\n';
   if (father_ != nullptr)
-    res += "  ppid: " + std::to_string(father_->stat_get().pid) + "\n";
+    res += "  ppid: " + std::to_string(father_->stat_get().pid) + '\n';
   else
     res += "  ppid: 0\n";
   res += "  childp: ";

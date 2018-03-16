@@ -101,6 +101,18 @@ public:
     return this->stat_.pid < other.stat_.pid;
   }
 
+  inline size_t total_mem_size()
+  {
+    return statm_.size + statm_.resident + statm_.shared + statm_.text +
+           statm_.data;
+  }
+
+  inline size_t total_mem_size() const
+  {
+    return statm_.size + statm_.resident + statm_.shared + statm_.text +
+           statm_.data;
+  }
+
 private:
   void parse_stat_file(FILE*);
   void fill_stat_map();
