@@ -33,8 +33,29 @@ std::vector<Process> get_all_processes()
   std::vector<Process> res;
   for (auto p : proc_dirs)
   {
-    res.push_back(Process(p));
+    res.emplace_back(p);
   }
   return res;
+}
+
+std::vector<Process> resolve_father_sons(std::vector<Process> src)
+{
+  std::map<size_t, Process&> proc_map;
+  for (Process& proc : src)
+    proc_map.emplace(proc.stat_get().pid, proc);
+  for (Process& proc : src)
+  {
+    try
+    {
+      auto& father = proc_map.at(proc.stat_get().ppid);
+      proc.set_father(father);
+      father.add_child(proc);
+    }
+    catch (std::out_of_range e)
+    {
+      proc.set_father(nullptr);
+    }
+  }
+  return src;
 }
 }

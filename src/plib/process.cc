@@ -9,6 +9,23 @@ Process::Process(fs::path p)
   fill_mem_map();
 }
 
+Process::Process(const Process& other)
+{
+  this->copy_fields(other);
+}
+
+Process& Process::operator=(Process& other)
+{
+  this->copy_fields(other);
+  return *this;
+}
+
+Process& Process::operator=(const Process& other)
+{
+  this->copy_fields(other);
+  return *this;
+}
+
 void Process::refresh()
 {
   fill_stat_map();
@@ -113,6 +130,18 @@ std::string Process::dump() const
   res += "  pid: " + std::to_string(stat_.pid) + '\n';
   res += "  state: " + std::string(1, stat_.state) + '\n';
   res += "  size: " + calculate_size(statm_.size) + "\n";
+  if (father_ != nullptr)
+    res += "  ppid: " + std::to_string(father_->stat_get().pid) + "\n";
+  else
+    res += "  ppid: 0\n";
+  res += "  childp: ";
+  for (const auto& child : children_)
+  {
+    res += std::to_string(child.stat_get().pid);
+    if (&child != &(children_.back()))
+      res += ", ";
+  }
+  res += '\n';
   return res;
 }
 
@@ -130,5 +159,15 @@ void Process::set_error_errno(std::string err)
 std::ostream& operator<<(std::ostream& ostr_, const Process& p)
 {
   return ostr_ << p.dump();
+}
+
+void Process::copy_fields(const Process& other)
+{
+  this->path_ = other.path_;
+  this->name_ = other.name_;
+  this->stat_ = other.stat_;
+  this->statm_ = other.statm_;
+  this->children_ = other.children_;
+  this->father_ = other.father_;
 }
 }

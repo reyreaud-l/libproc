@@ -21,4 +21,6 @@ std::vector<fs::path> get_proc_dirs(const fs::path&);
 
 /* Return all object Process */
 std::vector<Process> get_all_processes();
+
+std::vector<Process> resolve_father_sons(std::vector<Process>);
 }

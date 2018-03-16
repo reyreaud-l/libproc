@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string.h> // strerror
 #include <string>
 #include <vector>
@@ -22,6 +23,10 @@ class Process
 {
 public:
   Process(fs::path);
+  Process(const Process&);
+  Process& operator=(Process&);
+  Process& operator=(const Process&);
+
   void refresh();
   std::string dump() const;
   friend std::ostream& operator<<(std::ostream&, const Process&);
@@ -66,6 +71,36 @@ public:
     return stat_;
   }
 
+  inline Process father_get()
+  {
+    return *(father_.get());
+  }
+
+  inline const Process father_get() const
+  {
+    return *(father_.get());
+  }
+
+  inline void set_father(Process& father)
+  {
+    father_ = std::make_unique<Process>(father);
+  }
+
+  inline void set_father(std::nullptr_t)
+  {
+    father_ = nullptr;
+  }
+
+  inline void add_child(Process& child)
+  {
+    children_.push_back(child);
+  }
+
+  inline bool operator<(const Process& other)
+  {
+    return this->stat_.pid < other.stat_.pid;
+  }
+
 private:
   void parse_stat_file(FILE*);
   void fill_stat_map();
@@ -73,6 +108,7 @@ private:
   void fill_mem_map();
   void set_error_errno(std::string);
   void set_error(std::string);
+  void copy_fields(const Process&);
 
   fs::path path_;
   std::string name_;
@@ -80,5 +116,7 @@ private:
   std::string error_;
   pstat stat_;
   memstat statm_;
+  std::vector<Process> children_;
+  std::shared_ptr<Process> father_;
 };
 }
