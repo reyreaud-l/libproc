@@ -5,15 +5,17 @@ namespace plib
 Process::Process(fs::path p)
   : path_(p)
 {
-  fill_status_map();
+  fill_stat_map();
+  fill_mem_map();
 }
 
 void Process::refresh()
 {
-  fill_status_map();
+  fill_stat_map();
+  fill_mem_map();
 }
 
-void Process::fill_status_map()
+void Process::fill_stat_map()
 {
   auto pfile = std::fopen(std::string(path_.string() + "/stat").c_str(), "r");
   if (pfile == NULL)
@@ -22,11 +24,42 @@ void Process::fill_status_map()
       std::string("Could not open file " + path_.string() + ": "));
     return;
   }
-  parse_file(pfile);
+  parse_stat_file(pfile);
   fclose(pfile);
 }
 
-void Process::parse_file(FILE* pfile)
+void Process::fill_mem_map()
+{
+  auto pfile = std::fopen(std::string(path_.string() + "/statm").c_str(), "r");
+  if (pfile == NULL)
+  {
+    set_error_errno(
+      std::string("Could not open file " + path_.string() + ": "));
+    return;
+  }
+  parse_mem_file(pfile);
+  fclose(pfile);
+}
+
+void Process::parse_mem_file(FILE* pfile)
+{
+  char sfile[MAX_PROC_FILE_LEN];
+  char* s = NULL;
+  if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == NULL)
+  {
+    set_error_errno(std::string(""));
+    return;
+  }
+  if (std::sscanf(sfile, "%lu %lu %lu %lu %lu %lu %lu", &(statm_.size),
+                  &(statm_.resident), &(statm_.shared), &(statm_.text),
+                  &(statm_.lib), &(statm_.data), &(statm_.dt)))
+  {
+    set_error_errno(std::string(""));
+    return;
+  }
+}
+
+void Process::parse_stat_file(FILE* pfile)
 {
   char sfile[MAX_PROC_FILE_LEN];
   char* s = NULL;
@@ -37,7 +70,7 @@ void Process::parse_file(FILE* pfile)
     return;
   }
 
-  if (sscanf(sfile, "%d", &(stat_.pid)) == EOF)
+  if (std::sscanf(sfile, "%d", &(stat_.pid)) == EOF)
   {
     set_error_errno(std::string(""));
     return;
@@ -48,7 +81,7 @@ void Process::parse_file(FILE* pfile)
   strncpy(stat_.comm, s, t - s);
   stat_.comm[t - s] = '\0';
   auto res = std::sscanf(
-    sfile,
+    t + 2,
     "%c %d %d %d %d %d %u %lu %lu %lu %lu %lu %lu %ld %ld %ld %ld %ld "
     "%ld %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu %d "
     "%d %u %u %llu %lu %ld %lu %lu %lu %lu %lu %lu %lu %d",
@@ -73,6 +106,16 @@ void Process::parse_file(FILE* pfile)
   }
 }
 
+std::string Process::dump() const
+{
+  std::string res;
+  res += std::string(stat_.comm) + '\n';
+  res += "  pid: " + std::to_string(stat_.pid) + '\n';
+  res += "  state: " + std::string(1, stat_.state) + '\n';
+  res += "  size: " + calculate_size(statm_.size) + "\n";
+  return res;
+}
+
 void Process::set_error(std::string err)
 {
   valid_ = false;
@@ -86,7 +129,6 @@ void Process::set_error_errno(std::string err)
 
 std::ostream& operator<<(std::ostream& ostr_, const Process& p)
 {
-  auto s = p.stat_get();
-  return ostr_ << "pid: " << s.pid << " cmd: " << s.comm;
+  return ostr_ << p.dump();
 }
 }

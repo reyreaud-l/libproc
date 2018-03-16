@@ -1,6 +1,6 @@
 find_library(FILESYSTEM stdc++fs)
 
-set(SRC plib.cc process.cc)
+set(SRC plib.cc process.cc helper.cc)
 
 add_library(${LIB} SHARED ${SRC})
 target_include_directories(${LIB} PUBLIC ${CMAKE_SOURCE_DIR}/include)

@@ -22,8 +22,8 @@ struct pstat
   size_t cmajflt;
   size_t utime;
   size_t stime;
-  size_t cutime;
-  size_t cstime;
+  long int cutime;
+  long int cstime;
   long priority;
   long nice;
   long num_threads;
