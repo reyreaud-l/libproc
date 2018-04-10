@@ -26,6 +26,26 @@ Process& Process::operator=(const Process& other)
   return *this;
 }
 
+void Process::kill()
+{
+  ::kill(this->stat_.pid, SIGTERM);
+}
+
+void Process::kill(int sig)
+{
+  ::kill(this->stat_.pid, sig);
+}
+
+void Process::kill() const
+{
+  ::kill(this->stat_.pid, SIGTERM);
+}
+
+void Process::kill(int sig) const
+{
+  ::kill(this->stat_.pid, sig);
+}
+
 void Process::refresh()
 {
   fill_stat_map();
@@ -55,6 +75,7 @@ void Process::fill_mem_map()
     return;
   }
   parse_mem_file(pfile);
+  this->name_ = stat_.comm;
   fclose(pfile);
 }
 
@@ -134,7 +155,6 @@ std::string Process::dump() const
   res += "  shared: " + calculate_size(statm_.shared * page_size()) + '\n';
   res += "  text: " + calculate_size(statm_.text * page_size()) + '\n';
   res += "  data: " + calculate_size(statm_.data * page_size()) + '\n';
-  res += "  totalmem: " + calculate_size(total_mem_size() * page_size()) + '\n';
   res += "  threads: " + std::to_string(stat_.num_threads) + '\n';
   if (father_ != nullptr)
     res += "  ppid: " + std::to_string(father_->stat_get().pid) + '\n';
@@ -176,4 +196,4 @@ void Process::copy_fields(const Process& other)
   this->children_ = other.children_;
   this->father_ = other.father_;
 }
-}
+} // namespace plib

@@ -6,8 +6,10 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <signal.h>
 #include <string.h> // strerror
 #include <string>
+#include <sys/types.h>
 #include <vector>
 
 #include "plib/helper.hh"
@@ -27,6 +29,10 @@ public:
   Process& operator=(Process&);
   Process& operator=(const Process&);
 
+  void kill();
+  void kill(int sig);
+  void kill() const;
+  void kill(int sig) const;
   void refresh();
   std::string dump() const;
   friend std::ostream& operator<<(std::ostream&, const Process&);
@@ -71,6 +77,16 @@ public:
     return stat_;
   }
 
+  inline const memstat statm_get()
+  {
+    return statm_;
+  }
+
+  inline const memstat statm_get() const
+  {
+    return statm_;
+  }
+
   inline Process father_get()
   {
     return *(father_.get());
@@ -101,18 +117,6 @@ public:
     return this->stat_.pid < other.stat_.pid;
   }
 
-  inline size_t total_mem_size()
-  {
-    return statm_.size + statm_.resident + statm_.shared + statm_.text +
-           statm_.data;
-  }
-
-  inline size_t total_mem_size() const
-  {
-    return statm_.size + statm_.resident + statm_.shared + statm_.text +
-           statm_.data;
-  }
-
 private:
   void parse_stat_file(FILE*);
   void fill_stat_map();
@@ -131,4 +135,4 @@ private:
   std::vector<Process> children_;
   std::shared_ptr<Process> father_;
 };
-}
+} // namespace plib
