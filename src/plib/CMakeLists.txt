@@ -4,6 +4,7 @@ set(SRC
   plib.cc
   process.cc
   get_proc.cc
+  sort.cc
   helper.cc
 )
 

@@ -49,22 +49,6 @@ fs::path get_proc_dir(const fs::path& root, int uid)
   return res;
 }
 
-std::vector<Process> sort_by_mem(std::vector<Process> src)
-{
-  std::sort(src.begin(), src.end(), [](const Process& a, const Process& b) {
-    return a.statm_get().size > b.statm_get().size;
-  });
-  return src;
-}
-
-std::vector<Process> sort_by_utime(std::vector<Process> src)
-{
-  std::sort(src.begin(), src.end(), [](const Process& a, const Process& b) {
-    return a.stat_get().utime > b.stat_get().utime;
-  });
-  return src;
-}
-
 std::vector<Process> resolve_father_sons(std::vector<Process> src)
 {
   std::map<size_t, Process&> proc_map;
