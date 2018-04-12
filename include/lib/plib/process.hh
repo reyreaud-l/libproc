@@ -87,6 +87,16 @@ public:
     return statm_;
   }
 
+  inline std::vector<Process> children_get()
+  {
+    return children_;
+  }
+
+  inline std::vector<Process> children_get() const
+  {
+    return children_;
+  }
+
   inline Process father_get()
   {
     return *(father_.get());

@@ -17,6 +17,10 @@ Process get_process(std::string name)
 {
   auto processes = get_all_processes();
   processes = resolve_father_sons(processes);
+  std::sort(processes.begin(), processes.end(),
+            [](const Process& a, const Process& b) {
+              return a.children_get().size() > b.children_get().size();
+            });
   auto proc =
     std::find_if(processes.begin(), processes.end(),
                  [&name](const Process& p) { return p.name_get() == name; });

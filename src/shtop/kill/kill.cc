@@ -7,6 +7,7 @@ void kill(std::string name, int signal)
   auto proc = plib::get_process(name);
   proc.kill(signal);
   std::cout << name << std::endl;
+  std::cout << proc.stat_get().pid << std::endl;
   std::cout << signal << std::endl;
 }
 } // namespace shtop::kill
