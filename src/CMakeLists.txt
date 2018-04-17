@@ -1,4 +1,5 @@
-find_library(FILESYSTEM stdc++fs)
+find_library(FILESYSTEM stdc++fs REQUIRED)
+find_package(Threads REQUIRED)
 
 set(SRC
   plib.cc
@@ -12,3 +13,4 @@ set(SRC
 add_library(${LIB} SHARED ${SRC})
 target_include_directories(${LIB} PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${LIB} PUBLIC ${FILESYSTEM})
+target_link_libraries(${LIB} PRIVATE Threads::Threads)

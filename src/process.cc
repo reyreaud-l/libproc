@@ -5,8 +5,7 @@ namespace plib
 Process::Process(fs::path p)
   : path_(p)
 {
-  fill_stat_map();
-  fill_mem_map();
+  refresh();
 }
 
 Process::Process(const Process& other)
@@ -29,25 +28,52 @@ Process& Process::operator=(const Process& other)
 void Process::kill()
 {
   ::kill(this->stat_.pid, SIGTERM);
+  set_error("killed");
 }
 
 void Process::kill(int sig)
 {
   ::kill(this->stat_.pid, sig);
+  set_error("killed");
 }
 
 void Process::kill() const
 {
   ::kill(this->stat_.pid, SIGTERM);
+  set_error("killed");
 }
 
 void Process::kill(int sig) const
 {
   ::kill(this->stat_.pid, sig);
+  set_error("killed");
+}
+
+void Process::wait_and_refresh()
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
+  this->refresh();
+}
+
+void Process::watcher()
+{
+  while (this->watch_)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
+    std::lock_guard<std::mutex> lock(this->watch_mutex_);
+    this->refresh();
+  }
+}
+
+void Process::watch()
+{
+  // Launch process to regularly poll update from /proc files
+  std::thread t1(&Process::watcher, this);
 }
 
 void Process::refresh()
 {
+  std::lock_guard<std::mutex> lock(this->watch_mutex_);
   fill_stat_map();
   fill_mem_map();
 }
@@ -144,8 +170,9 @@ void Process::parse_stat_file(FILE* pfile)
   }
 }
 
-std::string Process::_dump() const
+std::string Process::dump_() const
 {
+  std::lock_guard<std::mutex> lock(this->watch_mutex_);
   std::string res;
   res += std::string(stat_.comm) + '\n';
   res += "  pid: " + std::to_string(stat_.pid) + '\n';
@@ -173,16 +200,17 @@ std::string Process::_dump() const
 
 std::string Process::dump()
 {
-  return this->_dump();
+  return this->dump_();
 }
 
 const std::string Process::dump() const
 {
-  return this->_dump();
+  return this->dump_();
 }
 
 void Process::set_error(std::string err)
 {
+  watch_ = false;
   valid_ = false;
   error_ = err;
 }
