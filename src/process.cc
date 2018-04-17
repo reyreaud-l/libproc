@@ -144,7 +144,7 @@ void Process::parse_stat_file(FILE* pfile)
   }
 }
 
-std::string Process::dump() const
+std::string Process::_dump() const
 {
   std::string res;
   res += std::string(stat_.comm) + '\n';
@@ -169,6 +169,16 @@ std::string Process::dump() const
   }
   res += '\n';
   return res;
+}
+
+std::string Process::dump()
+{
+  return this->_dump();
+}
+
+const std::string Process::dump() const
+{
+  return this->_dump();
 }
 
 void Process::set_error(std::string err)

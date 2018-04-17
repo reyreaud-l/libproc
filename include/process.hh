@@ -63,7 +63,8 @@ public:
 
   void add_child(Process& child);
 
-  std::string dump() const;
+  std::string dump();
+  const std::string dump() const;
   friend std::ostream& operator<<(std::ostream&, const Process&);
 
   bool operator<(const Process& other);
@@ -76,6 +77,7 @@ private:
   void set_error_errno(std::string);
   void set_error(std::string);
   void copy_fields(const Process&);
+  std::string _dump() const;
 
   fs::path path_;
   std::string name_;
