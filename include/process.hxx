@@ -12,24 +12,30 @@ inline const std::string Process::name_get() const
   return name_;
 }
 
+template <plib::Error::kind K>
+bool Process::is_status()
+{
+  return error_.kind_get() == K;
+}
+
 inline bool Process::is_valid()
 {
-  return valid_;
+  return is_status<plib::Error::kind::valid>();
 }
 
 inline bool Process::is_valid() const
 {
-  return valid_;
+  return is_status<plib::Error::kind::valid>();
 }
 
-inline std::string Process::error_get()
+inline std::string Process::error_msg_get()
 {
-  return error_;
+  return error_.msg_get();
 }
 
-inline const std::string Process::error_get() const
+inline const std::string Process::error_msg_get() const
 {
-  return error_;
+  return error_.msg_get();
 }
 
 inline pstat Process::stat_get()

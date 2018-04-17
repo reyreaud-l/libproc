@@ -15,6 +15,7 @@
 #include <thread>
 #include <vector>
 
+#include "error.hh"
 #include "helper.hh"
 #include "mstat.hh"
 #include "pstat.hh"
@@ -35,8 +36,6 @@ public:
 
   void kill();
   void kill(int sig);
-  void kill() const;
-  void kill(int sig) const;
 
   void refresh();
 
@@ -50,12 +49,17 @@ public:
   bool operator<(const Process& other);
 
   /*{ Getters & Setters
-   */
+   * */
   std::string name_get();
   const std::string name_get() const;
 
-  std::string error_get();
-  const std::string error_get() const;
+  std::string error_msg_get();
+  const std::string error_msg_get() const;
+
+  template <plib::Error::kind K>
+  bool is_status();
+  template <plib::Error::kind K>
+  bool is_status() const;
 
   pstat stat_get();
   const pstat stat_get() const;
@@ -81,7 +85,8 @@ public:
   void watch_stop();
   void watch_start();
   void watch_toggle();
-  /* } */
+  /* }
+   * */
 
 private:
   void parse_stat_file(FILE*);
@@ -90,16 +95,15 @@ private:
   void fill_stat_map();
   void fill_mem_map();
 
-  void set_error_errno(std::string);
-  void set_error(std::string);
+  void set_error(plib::Error::kind, std::string);
+  void set_error_errno(plib::Error::kind, std::string);
 
   void copy_fields(const Process&);
   std::string dump_() const;
 
   fs::path path_;
   std::string name_;
-  bool valid_ = true;
-  std::string error_;
+  plib::Error error_;
 
   pstat stat_;
   memstat statm_;

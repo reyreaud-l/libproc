@@ -27,26 +27,13 @@ Process& Process::operator=(const Process& other)
 
 void Process::kill()
 {
-  ::kill(this->stat_.pid, SIGTERM);
-  set_error("killed");
+  this->kill(SIGTERM);
 }
 
 void Process::kill(int sig)
 {
   ::kill(this->stat_.pid, sig);
-  set_error("killed");
-}
-
-void Process::kill() const
-{
-  ::kill(this->stat_.pid, SIGTERM);
-  set_error("killed");
-}
-
-void Process::kill(int sig) const
-{
-  ::kill(this->stat_.pid, sig);
-  set_error("killed");
+  set_error(plib::Error::kind::killed, "killed");
 }
 
 void Process::wait_and_refresh()
@@ -60,8 +47,10 @@ void Process::watcher()
   while (this->watch_)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
-    std::lock_guard<std::mutex> lock(this->watch_mutex_);
-    this->refresh();
+    {
+      std::lock_guard<std::mutex> lock(this->watch_mutex_);
+      this->refresh();
+    }
   }
 }
 
@@ -84,6 +73,7 @@ void Process::fill_stat_map()
   if (pfile == NULL)
   {
     set_error_errno(
+      plib::Error::kind::fatal,
       std::string("Could not open file " + path_.string() + ": "));
     return;
   }
@@ -97,6 +87,7 @@ void Process::fill_mem_map()
   if (pfile == NULL)
   {
     set_error_errno(
+      plib::Error::kind::fatal,
       std::string("Could not open file " + path_.string() + ": "));
     return;
   }
@@ -111,14 +102,14 @@ void Process::parse_mem_file(FILE* pfile)
   char* s = NULL;
   if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == NULL)
   {
-    set_error_errno(std::string(""));
+    set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
   }
   if (std::sscanf(sfile, "%lu %lu %lu %lu %lu %lu %lu", &(statm_.size),
                   &(statm_.resident), &(statm_.shared), &(statm_.text),
                   &(statm_.lib), &(statm_.data), &(statm_.dt)))
   {
-    set_error_errno(std::string(""));
+    set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
   }
 }
@@ -130,13 +121,13 @@ void Process::parse_stat_file(FILE* pfile)
   char* t = NULL;
   if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == NULL)
   {
-    set_error_errno(std::string(""));
+    set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
   }
 
   if (std::sscanf(sfile, "%d", &(stat_.pid)) == EOF)
   {
-    set_error_errno(std::string(""));
+    set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
   }
 
@@ -165,7 +156,8 @@ void Process::parse_stat_file(FILE* pfile)
     &(stat_.env_start), &(stat_.env_end), &(stat_.exit_code));
   if (res == EOF)
   {
-    set_error_errno(std::string("Error reading " + path_.string() + ": "));
+    set_error_errno(plib::Error::kind::fatal,
+                    std::string("Error reading " + path_.string() + ": "));
     return;
   }
 }
@@ -208,16 +200,16 @@ const std::string Process::dump() const
   return this->dump_();
 }
 
-void Process::set_error(std::string err)
+void Process::set_error(plib::Error::kind kind, std::string msg)
 {
-  watch_ = false;
-  valid_ = false;
-  error_ = err;
+  this->watch_stop();
+  this->error_.set_error(kind, msg);
 }
 
-void Process::set_error_errno(std::string err)
+void Process::set_error_errno(plib::Error::kind kind, std::string msg)
 {
-  set_error(std::string(err + strerror(errno)));
+  this->watch_stop();
+  this->error_.set_error_errno(kind, msg);
 }
 
 std::ostream& operator<<(std::ostream& ostr_, const Process& p)
