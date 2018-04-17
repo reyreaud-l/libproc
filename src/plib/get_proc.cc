@@ -13,32 +13,18 @@ std::vector<Process> get_all_processes()
   return res;
 }
 
-Process get_process(std::string name)
+std::vector<Process> get_process(std::string name)
 {
   auto processes = get_all_processes();
-  processes = resolve_father_sons(processes);
-  std::sort(processes.begin(), processes.end(),
-            [](const Process& a, const Process& b) {
-              return a.children_get().size() > b.children_get().size();
-            });
-  auto proc =
-    std::find_if(processes.begin(), processes.end(),
-                 [&name](const Process& p) { return p.name_get() == name; });
-  if (proc != processes.end())
-    return *proc;
-  throw std::invalid_argument("Could not find a process for name: " + name);
+  auto res = std::vector<Process>();
+  for (auto& proc : processes)
+    if (proc.name_get() == name)
+      res.push_back(proc);
+  return res;
 }
 
 Process get_process(int uid)
 {
-  try
-  {
-    return get_proc_dir(get_proc_root(), uid);
-  }
-  catch (std::invalid_argument)
-  {
-    throw std::invalid_argument("Could not find a process for uid: " +
-                                std::to_string(uid));
-  }
+  return Process(get_proc_dir(get_proc_root(), uid));
 }
 } // namespace plib

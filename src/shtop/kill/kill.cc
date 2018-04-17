@@ -4,10 +4,16 @@ namespace shtop::kill
 {
 void kill(std::string name, int signal)
 {
-  auto proc = plib::get_process(name);
-  proc.kill(signal);
-  std::cout << name << std::endl;
-  std::cout << proc.stat_get().pid << std::endl;
-  std::cout << signal << std::endl;
+  try
+  {
+    auto proc = plib::get_process(name);
+    std::for_each(proc.begin(), proc.end(),
+                  [signal](plib::Process& a) { a.kill(signal); });
+  }
+  catch (std::invalid_argument) // get_process throw if no process could be
+                                // found
+  {
+    std::exit(1);
+  }
 }
 } // namespace shtop::kill

@@ -33,7 +33,6 @@ fs::path get_proc_dir(const fs::path& root, int uid)
   {
     throw std::invalid_argument("Expected directory");
   }
-  fs::path res;
   for (const auto& entry : fs::directory_iterator(root))
   {
     auto p = entry.path();
@@ -44,9 +43,10 @@ fs::path get_proc_dir(const fs::path& root, int uid)
       continue;
     if (str_p != std::to_string(uid))
       continue;
-    res = p;
+    return p;
   }
-  return res;
+  throw std::invalid_argument("Could not find a process for uid: " +
+                              std::to_string(uid));
 }
 
 std::vector<Process> resolve_father_sons(std::vector<Process> src)

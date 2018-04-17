@@ -25,11 +25,10 @@ fs::path get_proc_dir(const fs::path&, int uid);
 /* Return all object Process */
 std::vector<Process> get_all_processes();
 
-/* Return a precise Process for a given name. This function will read the
- * entire proc tree. It is similar to get_all_processes and then looking
- * for a precise name. If multiple process have the same name, it will
- * return the father one. */
-Process get_process(std::string);
+/* Return a list of Process with a name matching a given name. This function
+ * will read the entire proc tree. It is similar to get_all_processes and then
+ * looking for a precise name. */
+std::vector<Process> get_process(std::string);
 
 /* Return a precise Process for a given uid */
 Process get_process(int);
