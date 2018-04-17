@@ -9,5 +9,5 @@ set(SRC
 )
 
 add_library(${LIB} SHARED ${SRC})
-target_include_directories(${LIB} PUBLIC ${CMAKE_SOURCE_DIR}/include/lib)
+target_include_directories(${LIB} PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(${LIB} PUBLIC ${FILESYSTEM})

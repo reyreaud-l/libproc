@@ -3,7 +3,7 @@
 #include <cstring>
 #include <string>
 
-#include "shtop/kill/command_kill.hh"
+#include "kill/command_kill.hh"
 #include "tclap/CmdLine.h"
 
 namespace shtop

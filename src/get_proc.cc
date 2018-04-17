@@ -1,4 +1,4 @@
-#include "plib/plib.hh"
+#include "plib.hh"
 
 namespace plib
 {

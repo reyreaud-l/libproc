@@ -1,6 +1,8 @@
+set(PROJECT shtop)
+
 set(PROJECT_INCLUDE
-  ${CMAKE_SOURCE_DIR}/include/bin
-  ${CMAKE_SOURCE_DIR}/include/lib
+  ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/example/include
 )
 
 set(SRC

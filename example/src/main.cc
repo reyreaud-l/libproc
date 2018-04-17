@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "plib/plib.hh"
-#include "shtop/command_line.hh"
+#include "command_line.hh"
+#include "plib.hh"
 
 int main(int argc, char* argv[])
 {

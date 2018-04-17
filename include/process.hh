@@ -12,9 +12,9 @@
 #include <sys/types.h>
 #include <vector>
 
-#include "plib/helper.hh"
-#include "plib/mstat.hh"
-#include "plib/pstat.hh"
+#include "helper.hh"
+#include "mstat.hh"
+#include "pstat.hh"
 
 #define MAX_PROC_FILE_LEN (2048)
 namespace plib

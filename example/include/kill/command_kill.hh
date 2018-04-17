@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "shtop/kill/kill.hh"
+#include "kill/kill.hh"
 #include "tclap/CmdLine.h"
 
 namespace shtop::kill

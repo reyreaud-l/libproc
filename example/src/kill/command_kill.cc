@@ -1,4 +1,4 @@
-#include "shtop/kill/command_kill.hh"
+#include "kill/command_kill.hh"
 
 namespace shtop::kill
 {

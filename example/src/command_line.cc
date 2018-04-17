@@ -1,4 +1,4 @@
-#include "shtop/command_line.hh"
+#include "command_line.hh"
 
 namespace shtop
 {

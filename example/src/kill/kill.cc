@@ -1,4 +1,4 @@
-#include "shtop/kill/kill.hh"
+#include "kill/kill.hh"
 
 namespace shtop::kill
 {

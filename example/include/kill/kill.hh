@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 
-#include "plib/plib.hh"
-#include "plib/process.hh"
+#include "plib.hh"
+#include "process.hh"
 
 namespace shtop::kill
 {
