@@ -5,6 +5,7 @@
 
 #include "kill/command_kill.hh"
 #include "tclap/CmdLine.h"
+#include "watch/command_watch.hh"
 
 namespace shtop
 {
@@ -15,5 +16,4 @@ public:
   CommandLine() = default;
   CommandLine(int argc, char* argv[]);
 };
-
 } // namespace shtop

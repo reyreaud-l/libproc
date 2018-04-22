@@ -47,17 +47,20 @@ void Process::watcher()
   while (this->watch_)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
-    {
-      std::lock_guard<std::mutex> lock(this->watch_mutex_);
-      this->refresh();
-    }
+    this->refresh();
   }
 }
 
 void Process::watch()
 {
   // Launch process to regularly poll update from /proc files
+  this->watch_start();
   std::thread t1(&Process::watcher, this);
+}
+
+void Process::on_update(std::function<void(Process)> notifee)
+{
+  this->notifee_ = notifee;
 }
 
 void Process::refresh()
@@ -65,6 +68,7 @@ void Process::refresh()
   std::lock_guard<std::mutex> lock(this->watch_mutex_);
   fill_stat_map();
   fill_mem_map();
+  notifee_(*this);
 }
 
 void Process::fill_stat_map()
@@ -219,6 +223,7 @@ std::ostream& operator<<(std::ostream& ostr_, const Process& p)
 
 void Process::copy_fields(const Process& other)
 {
+  // FIXME: Update with all fields
   this->path_ = other.path_;
   this->name_ = other.name_;
   this->stat_ = other.stat_;

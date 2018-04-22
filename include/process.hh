@@ -4,6 +4,7 @@
 #include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -41,6 +42,7 @@ public:
 
   void wait_and_refresh();
   void watch();
+  void on_update(std::function<void(Process)>);
 
   std::string dump();
   const std::string dump() const;
@@ -114,6 +116,7 @@ private:
   bool watch_ = true;
   std::size_t delay_;
   mutable std::mutex watch_mutex_;
+  std::function<void(Process)> notifee_ = [](Process) {};
   void watcher();
 };
 } // namespace plib

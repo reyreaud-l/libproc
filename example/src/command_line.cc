@@ -14,5 +14,11 @@ CommandLine::CommandLine(int argc, char* argv[])
     kill.parse(argc, argv);
     kill.execute();
   }
+  else if (!::strcmp(cmd, "watch"))
+  {
+    auto watch = watch::CommandWatch();
+    watch.parse(argc, argv);
+    watch.execute();
+  }
 }
 } // namespace shtop

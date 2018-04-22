@@ -11,12 +11,14 @@ set(SRC
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/kill)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/watch)
 
 add_executable(${PROJECT} ${SRC})
 target_include_directories(${PROJECT} PRIVATE ${PROJECT_INCLUDE})
 
 # Link to all sub libraries
 target_link_libraries(${PROJECT} PRIVATE ${PROJECT}_kill)
+target_link_libraries(${PROJECT} PRIVATE ${PROJECT}_watch)
 
 # Link to plib
 target_link_libraries(${PROJECT} PRIVATE ${LIB})
