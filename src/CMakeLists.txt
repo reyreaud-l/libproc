@@ -4,6 +4,7 @@ find_package(Threads REQUIRED)
 set(SRC
   plib.cc
   process.cc
+  watcher.cc
   get_proc.cc
   fs.cc
   sort.cc

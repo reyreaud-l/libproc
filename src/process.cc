@@ -8,23 +8,6 @@ Process::Process(fs::path p)
   refresh();
 }
 
-Process::Process(const Process& other)
-{
-  this->copy_fields(other);
-}
-
-Process& Process::operator=(Process& other)
-{
-  this->copy_fields(other);
-  return *this;
-}
-
-Process& Process::operator=(const Process& other)
-{
-  this->copy_fields(other);
-  return *this;
-}
-
 void Process::kill()
 {
   this->kill(SIGTERM);
@@ -36,39 +19,10 @@ void Process::kill(int sig)
   set_error(plib::Error::kind::killed, "killed");
 }
 
-void Process::wait_and_refresh()
-{
-  std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
-  this->refresh();
-}
-
-void Process::watcher()
-{
-  while (this->watch_)
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
-    this->refresh();
-  }
-}
-
-void Process::watch()
-{
-  // Launch process to regularly poll update from /proc files
-  this->watch_start();
-  std::thread t1(&Process::watcher, this);
-}
-
-void Process::on_update(std::function<void(Process)> notifee)
-{
-  this->notifee_ = notifee;
-}
-
 void Process::refresh()
 {
-  std::lock_guard<std::mutex> lock(this->watch_mutex_);
   fill_stat_map();
   fill_mem_map();
-  notifee_(*this);
 }
 
 void Process::fill_stat_map()
@@ -168,7 +122,6 @@ void Process::parse_stat_file(FILE* pfile)
 
 std::string Process::dump_() const
 {
-  std::lock_guard<std::mutex> lock(this->watch_mutex_);
   std::string res;
   res += std::string(stat_.comm) + '\n';
   res += "  pid: " + std::to_string(stat_.pid) + '\n';
@@ -206,29 +159,16 @@ const std::string Process::dump() const
 
 void Process::set_error(plib::Error::kind kind, std::string msg)
 {
-  this->watch_stop();
   this->error_.set_error(kind, msg);
 }
 
 void Process::set_error_errno(plib::Error::kind kind, std::string msg)
 {
-  this->watch_stop();
   this->error_.set_error_errno(kind, msg);
 }
 
 std::ostream& operator<<(std::ostream& ostr_, const Process& p)
 {
   return ostr_ << p.dump();
-}
-
-void Process::copy_fields(const Process& other)
-{
-  // FIXME: Update with all fields
-  this->path_ = other.path_;
-  this->name_ = other.name_;
-  this->stat_ = other.stat_;
-  this->statm_ = other.statm_;
-  this->children_ = other.children_;
-  this->father_ = other.father_;
 }
 } // namespace plib

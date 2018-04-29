@@ -1,19 +1,15 @@
 #pragma once
 
 #include <algorithm>
-#include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
-#include <functional>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <signal.h>
 #include <string.h> // strerror
 #include <string>
 #include <sys/types.h>
-#include <thread>
 #include <vector>
 
 #include "error.hh"
@@ -31,18 +27,15 @@ class Process
 {
 public:
   Process(fs::path);
-  Process(const Process&);
-  Process& operator=(Process&);
-  Process& operator=(const Process&);
+  Process(Process&) = default;
+  Process(const Process&) = default;
+  Process& operator=(Process&) = default;
+  Process& operator=(const Process&) = default;
 
   void kill();
   void kill(int sig);
 
   void refresh();
-
-  void wait_and_refresh();
-  void watch();
-  void on_update(std::function<void(Process)>);
 
   std::string dump();
   const std::string dump() const;
@@ -82,11 +75,6 @@ public:
   void set_father(std::nullptr_t);
 
   void add_child(Process& child);
-
-  void delay_set(std::size_t);
-  void watch_stop();
-  void watch_start();
-  void watch_toggle();
   /* }
    * */
 
@@ -112,12 +100,6 @@ private:
 
   std::vector<Process> children_;
   std::shared_ptr<Process> father_;
-
-  bool watch_ = true;
-  std::size_t delay_;
-  mutable std::mutex watch_mutex_;
-  std::function<void(Process)> notifee_ = [](Process) {};
-  void watcher();
 };
 } // namespace plib
 

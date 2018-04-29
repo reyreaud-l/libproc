@@ -97,22 +97,4 @@ inline bool Process::operator<(const Process& other)
 {
   return this->stat_.pid < other.stat_.pid;
 }
-
-inline void Process::delay_set(std::size_t delay)
-{
-  this->delay_ = delay;
-}
-
-inline void Process::watch_stop()
-{
-  this->watch_ = false;
-}
-inline void Process::watch_start()
-{
-  this->watch_ = true;
-}
-inline void Process::watch_toggle()
-{
-  this->watch_ = !this->watch_;
-}
 } // namespace plib

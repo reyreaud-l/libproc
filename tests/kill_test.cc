@@ -25,12 +25,24 @@ protected:
 };
 
 // This test will hang if it fails to kill the subprocess.
-TEST_F(WhileTrueProcess, kill)
+TEST_F(WhileTrueProcess, sigint)
 {
   if (pid_ != 0)
   {
     auto proc = plib::get_process(pid_);
     proc.kill(SIGINT);
+    EXPECT_TRUE(proc.is_status<plib::Error::kind::killed>());
+    waitpid(-1, NULL, WNOHANG);
+  }
+}
+
+// This test will hang if it fails to kill the subprocess.
+TEST_F(WhileTrueProcess, sigterm)
+{
+  if (pid_ != 0)
+  {
+    auto proc = plib::get_process(pid_);
+    proc.kill();
     EXPECT_TRUE(proc.is_status<plib::Error::kind::killed>());
     waitpid(-1, NULL, WNOHANG);
   }

@@ -27,13 +27,13 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 
 set(TEST ${PROJECT}_test)
 set(TEST_COMMAND ctest -V)
-set(TEST_CLEAN_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/check-clean.sh)
+set(TEST_CLEAN_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/scripts/check-clean.sh)
 
-set(WHILE_TRUE_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/while_true.sh)
+set(WHILE_TRUE_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/while_true.sh)
 
 configure_file(script.hh.in script.hh)
 
-add_custom_target(check COMMAND ${TEST_COMMAND} COMMENT "Running tests")
+add_custom_target(check COMMAND ${TEST_COMMAND} -E env GTEST_COLOR=1 COMMENT "Running tests")
 add_custom_target(check-clean COMMAND ${TEST_CLEAN_SCRIPT} COMMENT "Cleanup after tests...")
 
 # Always run clean after running check
