@@ -1,43 +1,24 @@
-find_package(Threads REQUIRED)
-# Download and unpack googletest at configure time
-file(MAKE_DIRECTORY googletest-download)
-configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
-execute_process(COMMAND cmake .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
-endif()
-execute_process(COMMAND ${CMAKE_COMMAND} --build .
-  RESULT_VARIABLE result
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
-if(result)
-  message(FATAL_ERROR "Build step for googletest failed: ${result}")
-endif()
+include(GTest)
 
-# Prevent overriding the parent project's compiler/linker
-# settings on Windows
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+IF(BUILD_COVERAGE)
+  include(CodeCoverage)
+  set(COVERAGE_EXCLUDES "*/googletest-src/*" "*gtest/*" "*7.3.1/*")
+  APPEND_COVERAGE_COMPILER_FLAGS()
+ENDIF(BUILD_COVERAGE)
 
-# Add googletest directly to our build. This defines
-# the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-  ${CMAKE_BINARY_DIR}/googletest-build
-  EXCLUDE_FROM_ALL)
-
-set(TEST ${PROJECT}_test)
 set(TEST_COMMAND ctest -V)
 set(TEST_CLEAN_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/scripts/check-clean.sh)
-
 set(WHILE_TRUE_SCRIPT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/while_true.sh)
 
 configure_file(script.hh.in script.hh)
 
 add_custom_target(check COMMAND ${TEST_COMMAND} -E env GTEST_COLOR=1 COMMENT "Running tests")
 add_custom_target(check-clean COMMAND ${TEST_CLEAN_SCRIPT} COMMENT "Cleanup after tests...")
-
-# Always run clean after running check
 add_custom_command(TARGET check POST_BUILD COMMAND ${TEST_CLEAN_SCRIPT} COMMENT "Cleanup after tests...")
+
+IF(BUILD_COVERAGE)
+  setup_target_for_coverage(NAME check-coverage EXECUTABLE ${TEST_COMMAND})
+ENDIF(BUILD_COVERAGE)
 
 file(GLOB FILES "*_test.cc")
 foreach(file ${FILES})
@@ -51,6 +32,13 @@ foreach(file ${FILES})
   target_link_libraries(${testcase} PRIVATE Threads::Threads)
   target_link_libraries(${testcase} PRIVATE gtest_main)
   target_compile_options(${testcase} PRIVATE -std=c++17 -Wall -Wextra -Werror -pedantic) 
+
   add_test(NAME "${testcase}_default" COMMAND ${testcase})
-  add_dependencies(check "${testcase}")
+  add_dependencies(check ${testcase})
+
+  IF(BUILD_COVERAGE)
+    target_compile_options(${testcase} PRIVATE "-fprofile-arcs" "-ftest-coverage")
+    target_link_libraries(${testcase} PRIVATE "-coverage" "-lgcov")
+    add_dependencies(check-coverage ${testcase})
+  ENDIF(BUILD_COVERAGE)
 endforeach()

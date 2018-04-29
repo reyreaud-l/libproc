@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "process.hh"
+#include "watcher.hh"
 
 namespace plib
 {
