@@ -3,7 +3,7 @@
 namespace plib
 {
 Process::Process(fs::path p)
-  : path_(p)
+  : path_(std::move(p))
 {
   refresh();
 }
@@ -28,7 +28,7 @@ void Process::refresh()
 void Process::fill_stat_map()
 {
   auto pfile = std::fopen(std::string(path_.string() + "/stat").c_str(), "r");
-  if (pfile == NULL)
+  if (pfile == nullptr)
   {
     set_error_errno(
       plib::Error::kind::fatal,
@@ -42,7 +42,7 @@ void Process::fill_stat_map()
 void Process::fill_mem_map()
 {
   auto pfile = std::fopen(std::string(path_.string() + "/statm").c_str(), "r");
-  if (pfile == NULL)
+  if (pfile == nullptr)
   {
     set_error_errno(
       plib::Error::kind::fatal,
@@ -57,15 +57,15 @@ void Process::fill_mem_map()
 void Process::parse_mem_file(FILE* pfile)
 {
   char sfile[MAX_PROC_FILE_LEN];
-  char* s = NULL;
-  if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == NULL)
+  char* s = nullptr;
+  if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == nullptr)
   {
     set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
   }
-  if (std::sscanf(sfile, "%lu %lu %lu %lu %lu %lu %lu", &(statm_.size),
-                  &(statm_.resident), &(statm_.shared), &(statm_.text),
-                  &(statm_.lib), &(statm_.data), &(statm_.dt)))
+  if ((bool)std::sscanf(sfile, "%lu %lu %lu %lu %lu %lu %lu", &(statm_.size),
+                        &(statm_.resident), &(statm_.shared), &(statm_.text),
+                        &(statm_.lib), &(statm_.data), &(statm_.dt)))
   {
     set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
@@ -75,9 +75,9 @@ void Process::parse_mem_file(FILE* pfile)
 void Process::parse_stat_file(FILE* pfile)
 {
   char sfile[MAX_PROC_FILE_LEN];
-  char* s = NULL;
-  char* t = NULL;
-  if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == NULL)
+  char* s = nullptr;
+  char* t = nullptr;
+  if ((s = fgets(sfile, MAX_PROC_FILE_LEN, pfile)) == nullptr)
   {
     set_error_errno(plib::Error::kind::fatal, std::string(""));
     return;
@@ -133,15 +133,21 @@ std::string Process::dump_() const
   res += "  data: " + calculate_size(statm_.data * page_size()) + '\n';
   res += "  threads: " + std::to_string(stat_.num_threads) + '\n';
   if (father_ != nullptr)
+  {
     res += "  ppid: " + std::to_string(father_->stat_get().pid) + '\n';
+  }
   else
+  {
     res += "  ppid: 0\n";
+  }
   res += "  childp: ";
   for (const auto& child : children_)
   {
     res += std::to_string(child.stat_get().pid);
     if (&child != &(children_.back()))
+    {
       res += ", ";
+    }
   }
   res += '\n';
   return res;
@@ -157,12 +163,12 @@ const std::string Process::dump() const
   return this->dump_();
 }
 
-void Process::set_error(plib::Error::kind kind, std::string msg)
+void Process::set_error(plib::Error::kind kind, const std::string& msg)
 {
   this->error_.set_error(kind, msg);
 }
 
-void Process::set_error_errno(plib::Error::kind kind, std::string msg)
+void Process::set_error_errno(plib::Error::kind kind, const std::string& msg)
 {
   this->error_.set_error_errno(kind, msg);
 }

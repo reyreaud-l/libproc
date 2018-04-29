@@ -19,10 +19,10 @@ public:
   inline void set_error(kind k, std::string msg)
   {
     kind_ = k;
-    msg_ = msg;
+    msg_ = std::move(msg);
   }
 
-  inline void set_error_errno(kind k, std::string msg)
+  inline void set_error_errno(kind k, const std::string& msg)
   {
     set_error(k, std::string(msg + strerror(errno)));
   }

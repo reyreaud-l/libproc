@@ -33,6 +33,6 @@ void Watcher::launch_async_watch()
 
 void Watcher::on_update(std::function<void(Process)> notifee)
 {
-  this->notifee_ = notifee;
+  this->notifee_ = std::move(notifee);
 }
 } // namespace plib

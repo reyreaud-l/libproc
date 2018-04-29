@@ -24,3 +24,10 @@ IF(BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
 ENDIF(BUILD_TESTS)
+
+IF(CMAKE_EXPORT_COMPILE_COMMANDS)
+  add_custom_target(clang-tidy COMMAND "run-clang-tidy.py"
+    "-header-filter='${CMAKE_CURRENT_SOURCE_DIR}/include/.*'"
+    "-checks=-*,modernize-*,readability-*,performance-*,-readability-named-parameter"
+    COMMENT "Running clang-tidy static checks")
+ENDIF(CMAKE_EXPORT_COMPILE_COMMANDS)

@@ -53,6 +53,6 @@ private:
 
   bool watch_ = true;
   std::size_t delay_ = 0;
-  callback_func notifee_ = [](Process) {};
+  callback_func notifee_ = [](const Process&) {};
 };
 } // namespace plib

@@ -29,7 +29,7 @@ std::vector<Process> get_all_processes();
 /* Return a list of Process with a name matching a given name. This function
  * will read the entire proc tree. It is similar to get_all_processes and then
  * looking for a precise name. */
-std::vector<Process> get_process(std::string);
+std::vector<Process> get_process(const std::string&);
 
 /* Return a precise Process for a given uid */
 Process get_process(int);

@@ -1,13 +1,13 @@
 #pragma once
 
 #include <algorithm>
+#include <csignal>
+#include <cstring> // strerror
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <signal.h>
-#include <string.h> // strerror
 #include <string>
 #include <sys/types.h>
 #include <vector>
@@ -85,8 +85,8 @@ private:
   void fill_stat_map();
   void fill_mem_map();
 
-  void set_error(plib::Error::kind, std::string);
-  void set_error_errno(plib::Error::kind, std::string);
+  void set_error(plib::Error::kind, const std::string&);
+  void set_error_errno(plib::Error::kind, const std::string&);
 
   void copy_fields(const Process&);
   std::string dump_() const;
