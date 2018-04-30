@@ -27,7 +27,7 @@ TEST_F(WhileTrueProcess, single_watch)
   if (pid_ != 0)
   {
     auto proc = plib::get_process(pid_);
-    auto watcher = plib::Watcher(proc);
+    plib::Watcher watcher(proc);
     bool notifee_called = false;
     watcher.on_update([&notifee_called, &watcher](plib::Process) {
       notifee_called = true;
@@ -45,7 +45,7 @@ TEST_F(WhileTrueProcess, multiple_watch)
   if (pid_ != 0)
   {
     auto proc = plib::get_process(pid_);
-    auto watcher = plib::Watcher(proc);
+    plib::Watcher watcher(proc);
     std::size_t count = 0;
     watcher.on_update([&count, &watcher](plib::Process) {
       if (count < 5)
@@ -67,7 +67,7 @@ TEST_F(WhileTrueProcess, delay_check)
   if (pid_ != 0)
   {
     auto proc = plib::get_process(pid_);
-    auto watcher = plib::Watcher(proc);
+    plib::Watcher watcher(proc);
     auto start = std::chrono::steady_clock::now();
 
     watcher.delay_set(5);

@@ -1,0 +1,101 @@
+language: generic
+sudo: false
+
+jobs:
+  include:
+    - stage: test
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+        - CXX=g++-5
+        - CC=gcc-5
+        - CMAKE_OPTS="-DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+
+
+    - stage: test
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - CXX=g++-6
+        - CC=gcc-6
+        - CMAKE_OPTS="-DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+
+    - stage: test
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - CXX=g++-7
+        - CC=gcc-7
+        - CMAKE_OPTS="-DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+
+#    - stage: test
+#      os: linux
+#      addons:
+#        apt:
+#          sources:
+#            - llvm-toolchain-trusty-4.0
+#          packages:
+#            - clang-4.0
+#            - libc++-dev
+#      env:
+#        - CXX=clang++-4.0
+#        - CC=clang-4.0
+#        - CMAKE_OPTS="-DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+#
+#    - stage: test
+#      os: linux
+#      addons:
+#        apt:
+#          sources:
+#            - llvm-toolchain-trusty-5.0
+#          packages:
+#            - clang-5.0
+#            - libc++-dev
+#      env:
+#        - CXX=clang++-5.0
+#        - CC=clang-5.0
+#        - CMAKE_OPTS="-DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release"
+    
+    - stage: coverage
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+            - lcov
+      env:
+        - CXX=g++-7
+        - CC=gcc-7
+        - CMAKE_OPTS="-DBUILD_TESTS=ON -DBUILD_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug"
+      script:
+        - mkdir ./build
+        - cd ./build && cmake $CMAKE_OPTS ..
+        - make
+        - make check-coverage
+
+stages:
+  - test
+  - coverage
+
+script:
+  - mkdir ./build
+  - cd ./build && cmake $CMAKE_OPTS ..
+  - make
+  - make check

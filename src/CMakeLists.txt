@@ -1,4 +1,3 @@
-find_library(FILESYSTEM stdc++fs REQUIRED)
 find_package(Threads REQUIRED)
 
 set(SRC
@@ -12,7 +11,8 @@ set(SRC
 
 add_library(${LIB} SHARED ${SRC})
 target_include_directories(${LIB} PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${LIB} PUBLIC ${FILESYSTEM})
+target_compile_options(${LIB} PUBLIC "-lstdc++fs")
+target_link_libraries(${LIB} PUBLIC "-lstdc++fs")
 target_link_libraries(${LIB} PRIVATE Threads::Threads)
 
 IF(BUILD_COVERAGE)
