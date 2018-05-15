@@ -2,7 +2,6 @@
 
 #include "process.hh"
 
-#include <chrono>
 #include <functional>
 #include <mutex>
 #include <thread>
@@ -14,45 +13,48 @@ class Watcher
 public:
   using callback_func = std::function<void(Process)>;
 
-  Watcher(Process);
+  Watcher();
 
   Watcher(Watcher&) = delete;
   Watcher(const Watcher&) = delete;
   Watcher& operator=(Watcher&) = delete;
   Watcher& operator=(const Watcher&) = delete;
 
-  void wait_and_refresh();
-  void watch();
-  void on_update(callback_func);
-  void launch_async_watch();
+  virtual void watch() = 0;
 
-  inline void watch_start()
+  virtual void start();
+  virtual void on_update(callback_func);
+
+  virtual inline void watch_start()
   {
     watch_ = true;
   }
 
-  inline void watch_stop()
+  virtual inline void watch_stop()
   {
     watch_ = false;
   }
 
-  inline void watch_toggle()
+  virtual inline void watch_toggle()
   {
     watch_ = !watch_;
   }
 
-  inline void delay_set(std::size_t millisecs)
+  virtual inline void join()
   {
-    delay_ = millisecs;
+    this->server.join();
+  }
+
+  virtual inline void join() const
+  {
+    this->server.join();
   }
 
   mutable std::mutex watch_mutex;
 
-private:
-  Process process_;
-
+protected:
+  mutable std::thread server;
   bool watch_ = true;
-  std::size_t delay_ = 0;
   callback_func notifee_ = [](const Process&) {};
 };
 } // namespace plib

@@ -4,6 +4,7 @@ set(SRC
   plib.cc
   process.cc
   watcher.cc
+  periodic_watcher.cc
   fs.cc
   sort.cc
   helper.cc

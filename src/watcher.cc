@@ -2,36 +2,19 @@
 
 namespace plib
 {
-Watcher::Watcher(Process process)
-  : process_(process)
+Watcher::Watcher()
 {
 }
 
-void Watcher::wait_and_refresh()
-{
-  std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
-  process_.refresh();
-}
-
-void Watcher::watch()
-{
-  while (this->watch_)
-  {
-    std::lock_guard<decltype(watch_mutex)> lock(watch_mutex);
-    wait_and_refresh();
-    notifee_(process_);
-  }
-}
-
-void Watcher::launch_async_watch()
+void Watcher::start()
 {
   // Launch watch function in an async way to refresh the inner
   // Process in the background.
   this->watch_start();
-  std::thread t1(&Watcher::watch, this);
+  this->server = std::thread(&Watcher::watch, this);
 }
 
-void Watcher::on_update(std::function<void(Process)> notifee)
+void Watcher::on_update(callback_func notifee)
 {
   this->notifee_ = std::move(notifee);
 }
