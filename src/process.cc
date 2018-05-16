@@ -177,4 +177,94 @@ std::ostream& operator<<(std::ostream& ostr_, const Process& p)
 {
   return ostr_ << p.dump();
 }
+
+std::string Process::name_get()
+{
+  return name_;
+}
+
+const std::string Process::name_get() const
+{
+  return name_;
+}
+
+bool Process::is_valid()
+{
+  return is_status<plib::Error::kind::valid>();
+}
+
+bool Process::is_valid() const
+{
+  return is_status<plib::Error::kind::valid>();
+}
+
+std::string Process::error_msg_get()
+{
+  return error_.msg_get();
+}
+
+const std::string Process::error_msg_get() const
+{
+  return error_.msg_get();
+}
+
+pstat Process::stat_get()
+{
+  return stat_;
+}
+
+const pstat Process::stat_get() const
+{
+  return stat_;
+}
+
+memstat Process::statm_get()
+{
+  return statm_;
+}
+
+const memstat Process::statm_get() const
+{
+  return statm_;
+}
+
+std::vector<Process> Process::children_get()
+{
+  return children_;
+}
+
+std::vector<Process> Process::children_get() const
+{
+  return children_;
+}
+
+Process Process::father_get()
+{
+  return *(father_.get());
+}
+
+const Process Process::father_get() const
+{
+  return *(father_.get());
+}
+
+void Process::set_father(Process& father)
+{
+  father_ = std::make_unique<Process>(father);
+}
+
+void Process::set_father(std::nullptr_t)
+{
+  father_ = nullptr;
+}
+
+void Process::add_child(Process& child)
+{
+  children_.push_back(child);
+}
+
+bool Process::operator<(const Process& other)
+{
+  return this->stat_.pid < other.stat_.pid;
+}
 } // namespace plib

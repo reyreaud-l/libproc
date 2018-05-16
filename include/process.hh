@@ -51,11 +51,6 @@ public:
   std::string error_msg_get();
   const std::string error_msg_get() const;
 
-  template <plib::Error::kind K>
-  bool is_status();
-  template <plib::Error::kind K>
-  bool is_status() const;
-
   pstat stat_get();
   const pstat stat_get() const;
 
@@ -75,6 +70,18 @@ public:
   void set_father(std::nullptr_t);
 
   void add_child(Process& child);
+
+  template <plib::Error::kind K>
+  bool is_status()
+  {
+    return error_.kind_get() == K;
+  }
+
+  template <plib::Error::kind K>
+  bool is_status() const
+  {
+    return error_.kind_get() == K;
+  }
   /* }
    * */
 
@@ -102,5 +109,3 @@ private:
   std::shared_ptr<Process> father_;
 };
 } // namespace plib
-
-#include "process.hxx"

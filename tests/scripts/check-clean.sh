@@ -1,6 +1,9 @@
 #!/bin/sh
 
-for file in $(ls *-test); do
+
+procs=$(ls *-test)
+echo "Cleaning the following possible processes" $procs
+for file in $procs; do
   pkill "$file" 
   if [ "$?" -eq 0 ]; then
     echo "Found some process while cleaning up $file"

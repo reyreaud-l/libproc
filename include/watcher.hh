@@ -6,6 +6,12 @@
 #include <mutex>
 #include <thread>
 
+#define DELETE_COPY_MOVE(X)                                                    \
+  X(X&) = delete;                                                              \
+  X(const X&) = delete;                                                        \
+  X& operator=(X&) = delete;                                                   \
+  X& operator=(const X&) = delete
+
 namespace plib
 {
 class Watcher
@@ -15,41 +21,19 @@ public:
 
   Watcher();
 
-  Watcher(Watcher&) = delete;
-  Watcher(const Watcher&) = delete;
-  Watcher& operator=(Watcher&) = delete;
-  Watcher& operator=(const Watcher&) = delete;
+  DELETE_COPY_MOVE(Watcher);
 
   virtual void watch() = 0;
 
-  virtual void start();
   virtual void on_update(callback_func);
 
-  virtual inline void watch_start()
-  {
-    watch_ = true;
-  }
+  virtual void watch_start();
+  virtual void watch_stop();
+  virtual void watch_toggle();
 
-  virtual inline void watch_stop()
-  {
-    watch_ = false;
-  }
-
-  virtual inline void watch_toggle()
-  {
-    watch_ = !watch_;
-  }
-
-  virtual inline void join()
-  {
-    this->server.join();
-  }
-
-  virtual inline void join() const
-  {
-    this->server.join();
-  }
-
+  virtual void start();
+  virtual void join();
+  virtual void join() const;
   mutable std::mutex watch_mutex;
 
 protected:
