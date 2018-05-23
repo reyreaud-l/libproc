@@ -16,8 +16,10 @@ void PeriodicWatcher::watch()
 {
   while (this->watch_)
   {
-    std::lock_guard<decltype(watch_mutex)> lock(watch_mutex);
-    wait_and_refresh();
+    {
+      LOCK_GUARD(this->watch_mutex);
+      wait_and_refresh();
+    }
     notifee_(process_);
   }
 }

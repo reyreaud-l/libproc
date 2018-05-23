@@ -32,7 +32,7 @@ TEST_F(WhileTrueProcess, sigint)
     auto proc = plib::get_process(pid_);
     proc.kill(SIGINT);
     EXPECT_TRUE(proc.is_status<plib::Error::kind::killed>());
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }
 
@@ -44,6 +44,6 @@ TEST_F(WhileTrueProcess, sigterm)
     auto proc = plib::get_process(pid_);
     proc.kill();
     EXPECT_TRUE(proc.is_status<plib::Error::kind::killed>());
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }

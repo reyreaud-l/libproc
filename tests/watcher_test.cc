@@ -42,7 +42,7 @@ TEST_F(Watcher, periodic_single_watch)
     watcher.watch();
     EXPECT_TRUE(notifee_called);
     proc.kill(SIGINT);
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }
 
@@ -54,16 +54,20 @@ TEST_F(Watcher, periodic_multiple_watch)
     std::size_t count = 0;
     watcher.on_update([&count, &watcher](plib::Process) {
       if (count < 5)
+      {
         count++;
+      }
       else
+      {
         watcher.watch_stop();
+      }
     });
     watcher.watch();
 
     EXPECT_EQ(count, 5);
 
     proc.kill(SIGINT);
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }
 
@@ -86,7 +90,7 @@ TEST_F(Watcher, periodic_delay_check)
     watcher.watch();
 
     proc.kill(SIGINT);
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }
 
@@ -97,7 +101,8 @@ TEST_F(Watcher, periodic_thread_check)
     SETUP_PERIODIC_WATCHER();
 
     std::condition_variable cv;
-    std::unique_lock<decltype(watcher.watch_mutex)> lk(watcher.watch_mutex);
+    std::mutex m;
+    std::unique_lock<decltype(m)> lk(m);
     bool assert_check = false;
 
     watcher.delay_set(10);
@@ -115,6 +120,6 @@ TEST_F(Watcher, periodic_thread_check)
     EXPECT_TRUE(assert_check);
 
     proc.kill(SIGINT);
-    waitpid(-1, NULL, WNOHANG);
+    waitpid(-1, nullptr, WNOHANG);
   }
 }
