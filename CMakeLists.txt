@@ -12,6 +12,20 @@ add_compile_options(-Wall -Wextra -pedantic -std=c++17 -g3)
 
 # Lib
 add_subdirectory(src/)
+add_subdirectory(include/)
+
+# Uninstall
+if(NOT TARGET uninstall)
+  configure_file(
+    "${CMAKE_MODULE_PATH}/uninstall.cmake.in"
+    "${CMAKE_MODULE_PATH}/uninstall.cmake"
+    IMMEDIATE @ONLY
+  )
+
+  add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_MODULE_PATH}/uninstall.cmake)
+endif()
+
 
 # Example
 IF(BUILD_EXAMPLE)

@@ -16,6 +16,8 @@ target_compile_options(${LIB} PUBLIC "-lstdc++fs")
 target_link_libraries(${LIB} PUBLIC "-lstdc++fs")
 target_link_libraries(${LIB} PRIVATE Threads::Threads)
 
+install(TARGETS ${LIB} LIBRARY DESTINATION lib)
+
 IF(BUILD_COVERAGE)
   target_compile_options(${LIB} PRIVATE "-fprofile-arcs" "-ftest-coverage")
   target_link_libraries(${LIB} PRIVATE "-coverage" "-lgcov")
