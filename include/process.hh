@@ -1,15 +1,15 @@
 #pragma once
 
+#include <sys/types.h>
 #include <algorithm>
 #include <csignal>
-#include <cstring> // strerror
+#include <cstring>  // strerror
 #include <experimental/filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
-#include <sys/types.h>
 #include <vector>
 
 #include "error.hh"
@@ -19,13 +19,11 @@
 
 #define MAX_PROC_FILE_LEN (2048)
 
-namespace plib
-{
+namespace plib {
 namespace fs = std::experimental::filesystem;
 
-class Process
-{
-public:
+class Process {
+ public:
   Process(fs::path);
   Process(Process&) = default;
   Process(const Process&) = default;
@@ -72,20 +70,18 @@ public:
   void add_child(Process& child);
 
   template <plib::Error::kind K>
-  bool is_status()
-  {
+  bool is_status() {
     return error_.kind_get() == K;
   }
 
   template <plib::Error::kind K>
-  bool is_status() const
-  {
+  bool is_status() const {
     return error_.kind_get() == K;
   }
   /* }
    * */
 
-private:
+ private:
   void parse_stat_file(FILE*);
   void parse_mem_file(FILE*);
 
@@ -108,4 +104,4 @@ private:
   std::vector<Process> children_;
   std::shared_ptr<Process> father_;
 };
-} // namespace plib
+}  // namespace plib

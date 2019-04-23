@@ -4,11 +4,9 @@
 
 #include <chrono>
 
-namespace plib
-{
-class PeriodicWatcher : public Watcher
-{
-public:
+namespace plib {
+class PeriodicWatcher : public Watcher {
+ public:
   PeriodicWatcher(Process);
 
   DELETE_COPY_MOVE(PeriodicWatcher);
@@ -17,13 +15,10 @@ public:
 
   void wait_and_refresh();
 
-  inline void delay_set(std::size_t millisecs)
-  {
-    delay_ = millisecs;
-  }
+  inline void delay_set(std::size_t millisecs) { delay_ = millisecs; }
 
-protected:
+ protected:
   Process process_;
   std::size_t delay_ = 0;
 };
-} // namespace plib
+}  // namespace plib

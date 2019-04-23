@@ -3,10 +3,8 @@
 #include <linux/limits.h>
 #include <string>
 
-namespace plib
-{
-struct pstat
-{
+namespace plib {
+struct pstat {
   int pid;
   char comm[PATH_MAX];
   char state;
@@ -60,4 +58,4 @@ struct pstat
   size_t env_end;
   int exit_code;
 };
-}
+}  // namespace plib

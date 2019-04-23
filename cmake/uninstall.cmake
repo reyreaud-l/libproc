@@ -1,8 +1,8 @@
-if(NOT EXISTS "/home/kexo/Projects/proclib/build/install_manifest.txt")
-  message(FATAL_ERROR "Cannot find install manifest: /home/kexo/Projects/proclib/build/install_manifest.txt")
-endif(NOT EXISTS "/home/kexo/Projects/proclib/build/install_manifest.txt")
+if(NOT EXISTS "/home/kexo/Projects/perso/proclib/build/install_manifest.txt")
+  message(FATAL_ERROR "Cannot find install manifest: /home/kexo/Projects/perso/proclib/build/install_manifest.txt")
+endif(NOT EXISTS "/home/kexo/Projects/perso/proclib/build/install_manifest.txt")
 
-file(READ "/home/kexo/Projects/proclib/build/install_manifest.txt" files)
+file(READ "/home/kexo/Projects/perso/proclib/build/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 foreach(file ${files})
   message(STATUS "Uninstalling $ENV{DESTDIR}${file}")

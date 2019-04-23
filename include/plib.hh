@@ -11,8 +11,7 @@
 #include "process.hh"
 #include "watcher.hh"
 
-namespace plib
-{
+namespace plib {
 namespace fs = std::experimental::filesystem;
 
 /* Return a path object for /proc */
@@ -44,4 +43,4 @@ std::vector<Process> sort_by_utime(std::vector<Process>);
 
 /* Resolve links between childs and father process in the given vector */
 std::vector<Process> resolve_father_sons(std::vector<Process>);
-} // namespace plib
+}  // namespace plib

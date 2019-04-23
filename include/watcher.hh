@@ -8,17 +8,15 @@
 
 #define LOCK_GUARD(X) std::lock_guard<decltype(X)> l(X)
 
-#define DELETE_COPY_MOVE(X)                                                    \
-  X(X&) = delete;                                                              \
-  X(const X&) = delete;                                                        \
-  X& operator=(X&) = delete;                                                   \
+#define DELETE_COPY_MOVE(X)  \
+  X(X&) = delete;            \
+  X(const X&) = delete;      \
+  X& operator=(X&) = delete; \
   X& operator=(const X&) = delete
 
-namespace plib
-{
-class Watcher
-{
-public:
+namespace plib {
+class Watcher {
+ public:
   using callback_func = std::function<void(Process)>;
 
   Watcher() = default;
@@ -37,10 +35,10 @@ public:
   virtual void join();
   virtual void join() const;
 
-protected:
+ protected:
   mutable std::thread server;
   mutable std::mutex watch_mutex;
   bool watch_ = true;
   callback_func notifee_ = [](const Process&) {};
 };
-} // namespace plib
+}  // namespace plib
